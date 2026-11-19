@@ -1,0 +1,259 @@
+{
+  "meta": {
+    "date": "2026-11-19T07:02:16.172Z",
+    "model": "claude-opus-5-5",
+    "effort": "high",
+    "dataset": "evals/reviewer/seed.json",
+    "datasetHash": "64d044e03af6",
+    "promptHash": "8fefb47fd78d",
+    "items": 10,
+    "batchSize": 10,
+    "inputTokens": 9577,
+    "outputTokens": 2512,
+    "cost": 0.088548,
+    "avgLatencyMs": 25338
+  },
+  "summary": {
+    "runs": 1,
+    "totals": {
+      "recall": {
+        "mean": 1,
+        "min": 1,
+        "max": 1
+      },
+      "rightReasonRecall": {
+        "mean": 1,
+        "min": 1,
+        "max": 1
+      },
+      "falsePositiveRate": {
+        "mean": 0.6,
+        "min": 0.6,
+        "max": 0.6
+      },
+      "noVerdict": 0
+    },
+    "byLabel": {
+      "factual_error": {
+        "n": 1,
+        "caught": {
+          "mean": 1,
+          "min": 1,
+          "max": 1
+        },
+        "rightReason": {
+          "mean": 1,
+          "min": 1,
+          "max": 1
+        }
+      },
+      "filler_distractor": {
+        "n": 1,
+        "caught": {
+          "mean": 1,
+          "min": 1,
+          "max": 1
+        },
+        "rightReason": {
+          "mean": 1,
+          "min": 1,
+          "max": 1
+        }
+      },
+      "incomplete_explanation": {
+        "n": 1,
+        "caught": {
+          "mean": 1,
+          "min": 1,
+          "max": 1
+        },
+        "rightReason": {
+          "mean": 1,
+          "min": 1,
+          "max": 1
+        }
+      },
+      "strawman_explanation": {
+        "n": 1,
+        "caught": {
+          "mean": 1,
+          "min": 1,
+          "max": 1
+        },
+        "rightReason": {
+          "mean": 1,
+          "min": 1,
+          "max": 1
+        }
+      },
+      "wrong_key": {
+        "n": 1,
+        "caught": {
+          "mean": 1,
+          "min": 1,
+          "max": 1
+        },
+        "rightReason": {
+          "mean": 1,
+          "min": 1,
+          "max": 1
+        }
+      }
+    }
+  },
+  "runs": [
+    {
+      "perItem": [
+        {
+          "id": "seed-01",
+          "label": "clean",
+          "verdict": "fail",
+          "category": "incomplete_explanation",
+          "reason": "The explanation states the correct state model and refutes the 'cancelled' option. It never specifically addresses the 'started/running/finished' option. It also doesn't explicitly refute the 'loading/success/error with repeated transitions' option beyond implying it. Per-option lines are missing.",
+          "outcome": "false_positive"
+        },
+        {
+          "id": "seed-02",
+          "label": "clean",
+          "verdict": "fail",
+          "category": "surface_tell",
+          "reason": "The correct option is far longer than the others and is the only one with a justification clause ('both work because Set is iterable'). The `.toArray()` and JSON options are bare fragments with no reasoning. A test-taker can pick the answer on form alone.",
+          "outcome": "false_positive"
+        },
+        {
+          "id": "seed-03",
+          "label": "clean",
+          "verdict": "fail",
+          "category": "incomplete_explanation",
+          "reason": "The explanation only describes what each method does and says 'neither implies the other', which loosely covers the 'calling one calls the other' option. It never addresses the claim that `preventDefault` only works on click and `stopPropagation` only on submit. It also never directly refutes the 'same thing, legacy naming' option. Not every option gets its own refutation.",
+          "outcome": "false_positive"
+        },
+        {
+          "id": "seed-04",
+          "label": "clean",
+          "verdict": "pass",
+          "category": "none",
+          "reason": "The distractors map to distinct real misconceptions: that only XHR can abort, that delaying requests fixes the race, and that browsers auto-order fetch responses. The explanation addresses each one accurately, and no option is defensible as correct. There is no length or justification-clause tell.",
+          "outcome": "pass"
+        },
+        {
+          "id": "seed-05",
+          "label": "clean",
+          "verdict": "pass",
+          "category": "none",
+          "reason": "Each distractor reflects a distinct misconception: HTTP caching mistaken for in-process caching, a belief that only network responses can be cached, and debouncing confused with result caching. The explanation refutes each one accurately and teaches why purity makes memoization safe. Every option carries a justification clause, so there is no form-based tell.",
+          "outcome": "pass"
+        },
+        {
+          "id": "seed-06",
+          "label": "wrong_key",
+          "verdict": "fail",
+          "category": "wrong_key",
+          "reason": "correctIndex points to the option claiming `new` clones the Foo function into a private copy, which is false. The correct option is the one about creating an object linked to Foo.prototype, binding `this`, and returning it unless an object is returned. The explanation itself describes that option. The explanation also doesn't refute the clone, plain-call, or convert-to-class distractors individually.",
+          "outcome": "caught"
+        },
+        {
+          "id": "seed-07",
+          "label": "incomplete_explanation",
+          "verdict": "fail",
+          "category": "incomplete_explanation",
+          "reason": "The explanation ends with 'The other approaches are incorrect.' It never explains why `in` fails (it includes inherited properties), why `!== undefined` fails (an own property can hold `undefined`), or why the `typeof` check is wrong. This collective dismissal fails the per-option explanation requirement.",
+          "outcome": "caught"
+        },
+        {
+          "id": "seed-08",
+          "label": "filler_distractor",
+          "verdict": "fail",
+          "category": "filler_distractor",
+          "reason": "'Ask the visitor to type the parameters into a prompt() dialog' isn't a real misconception about reading query strings. It is implausible padding that exists only to fill the option count.",
+          "outcome": "caught"
+        },
+        {
+          "id": "seed-09",
+          "label": "strawman_explanation",
+          "verdict": "fail",
+          "category": "strawman_explanation",
+          "reason": "The explanation refutes 'the idea that Promise.all renders the successful sections first and then throws once fetchB fails'. The distractor actually claims Promise.all resolves with the successful data and silently drops fetchB's result, with no throw at all. The explanation misstates the option before refuting it.",
+          "outcome": "caught"
+        },
+        {
+          "id": "seed-10",
+          "label": "factual_error",
+          "verdict": "fail",
+          "category": "factual_error",
+          "reason": "The explanation claims 'the browser terminates every worker after 30 seconds of runtime'. This is false: dedicated workers have no such fixed runtime limit and run until terminated or the page closes. The claim plants a misconception in the teaching text.",
+          "outcome": "caught"
+        }
+      ],
+      "byLabel": {
+        "factual_error": {
+          "n": 1,
+          "caught": 1,
+          "rightReason": 1,
+          "missed": 0,
+          "noVerdict": 0
+        },
+        "filler_distractor": {
+          "n": 1,
+          "caught": 1,
+          "rightReason": 1,
+          "missed": 0,
+          "noVerdict": 0
+        },
+        "incomplete_explanation": {
+          "n": 1,
+          "caught": 1,
+          "rightReason": 1,
+          "missed": 0,
+          "noVerdict": 0
+        },
+        "strawman_explanation": {
+          "n": 1,
+          "caught": 1,
+          "rightReason": 1,
+          "missed": 0,
+          "noVerdict": 0
+        },
+        "wrong_key": {
+          "n": 1,
+          "caught": 1,
+          "rightReason": 1,
+          "missed": 0,
+          "noVerdict": 0
+        }
+      },
+      "totals": {
+        "broken": 5,
+        "clean": 5,
+        "recall": 1,
+        "rightReasonRecall": 1,
+        "falsePositiveRate": 0.6,
+        "noVerdict": 0
+      }
+    }
+  ],
+  "calls": [
+    {
+      "run": 0,
+      "batch": 0,
+      "latencyMs": 25338,
+      "usage": {
+        "input_tokens": 9577,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 2512,
+        "output_tokens_details": {
+          "thinking_tokens": 1259
+        },
+        "service_tier": "standard",
+        "inference_geo": "global",
+        "speed": "standard"
+      },
+      "error": null
+    }
+  ]
+}
