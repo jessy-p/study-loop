@@ -435,7 +435,7 @@
       "Loading, success, and error \u2014 and a Promise can move between these repeatedly, e.g. back to loading whenever it's retried after an error"
     ],
     "correctIndex": 1,
-    "explanation": "A Promise starts `pending`, and can transition exactly once to either `fulfilled` (with a value) or `rejected` (with a reason) \u2014 after that it's permanently 'settled' and immutable, so calling `resolve()` or `reject()` again has no effect. There is no native 'cancelled' state \u2014 cancellation requires external mechanisms like `AbortController`.",
+    "explanation": "A Promise starts `pending`, and can transition exactly once to either `fulfilled` (with a value) or `rejected` (with a reason) \u2014 after that it's permanently 'settled' and immutable, so calling `resolve()` or `reject()` again has no effect. There is no native 'cancelled' state \u2014 cancellation requires external mechanisms like `AbortController`. \"Started, running, and finished\" describes a generic task life cycle, not a Promise: there is no running state, since a Promise only represents an eventual result. \"Loading, success, and error\" is wrong on both counts. Those aren't Promise states, and a settled Promise can never change again, so a retry has to create a new Promise.",
     "references": [
       "MDN: Promise"
     ],
@@ -524,13 +524,13 @@
     "mode": "quick-fire",
     "prompt": "What's the correct, idiomatic way to convert a `Set` into an array?",
     "options": [
-      "`Array.from(mySet)` or the spread syntax `[...mySet]` \u2014 both work because `Set` is iterable",
-      "`mySet.toArray()`",
-      "`JSON.parse(JSON.stringify(mySet))`",
-      "Sets cannot be converted to arrays; they must be manually looped and pushed into a new array element by element"
+      "`Array.from(mySet)` or spread syntax `[...mySet]`, which work because `Set` is iterable",
+      "`mySet.toArray()`, which `Set` provides as a built-in method alongside `has()` and `add()`",
+      "`JSON.parse(JSON.stringify(mySet))`, which works because `JSON.stringify` serializes a Set as an array of its values",
+      "Loop over it and push each value into a new array, because a Set can't be passed to array-creating utilities directly"
     ],
     "correctIndex": 0,
-    "explanation": "`Set` implements the iterable protocol, so both `Array.from()` and spread syntax `[...mySet]` work directly and are the standard idioms. `JSON.stringify` doesn't serialize Sets meaningfully (it produces `{}`), there's no built-in `.toArray()` method on `Set`, and manual looping works but isn't necessary given the built-in iterable-consuming utilities.",
+    "explanation": "`Set` implements the iterable protocol, so `Array.from()` and spread syntax `[...mySet]` both work directly and are the standard idioms. `Set` has no built-in `.toArray()` method. `JSON.stringify` doesn't serialize a Set as an array (it produces `{}`), so the round trip gives back an empty object, not the values. Manual looping works, but the claim that a Set can't be passed to array-creating utilities is false: that's exactly what `Array.from()` takes.",
     "references": [
       "MDN: Array.from"
     ],
@@ -836,7 +836,7 @@
       "`preventDefault()` cancels the browser's default action (e.g. a form submitting) but not propagation; `stopPropagation()` stops propagation but not the default action"
     ],
     "correctIndex": 3,
-    "explanation": "These two methods control entirely independent things: `preventDefault()` cancels the browser's native reaction to the event (like a checkbox toggling, or a form submitting and reloading the page), while `stopPropagation()` cancels the event's continued travel through the DOM tree to other listeners. Neither implies the other, and you can call one, both, or neither depending on what specific behavior needs to be blocked.",
+    "explanation": "These two methods control entirely independent things: `preventDefault()` cancels the browser's native reaction to the event (like a checkbox toggling, or a form submitting and reloading the page), while `stopPropagation()` cancels the event's continued travel through the DOM tree to other listeners. Neither implies the other, and you can call one, both, or neither depending on what specific behavior needs to be blocked. They aren't interchangeable aliases left over from old browsers: each blocks something different. Neither is tied to particular event types; both work on any event, though `preventDefault()` only has an effect when the event is cancelable.",
     "references": [
       "MDN: preventDefault",
       "MDN: stopPropagation"
