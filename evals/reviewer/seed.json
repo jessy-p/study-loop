@@ -1,0 +1,244 @@
+[
+  {
+    "id": "seed-01",
+    "label": "clean",
+    "source": "js-0023",
+    "note": "unchanged from the live bank",
+    "question": {
+      "topic": "javascript",
+      "mode": "quick-fire",
+      "prompt": "What are the three possible states of a Promise, and can a Promise transition between them freely?",
+      "options": [
+        "Resolved, unresolved, and cancelled — cancellation is a first-class state you reach by calling `promise.cancel()` while it's still unresolved",
+        "Pending, fulfilled, and rejected — and once a Promise is fulfilled or rejected ('settled'), it's locked in that state permanently",
+        "Started, running, and finished — the same life cycle as any generic async task, moving forward one step at a time as the work progresses",
+        "Loading, success, and error — and a Promise can move between these repeatedly, e.g. back to loading whenever it's retried after an error"
+      ],
+      "correctIndex": 1,
+      "explanation": "A Promise starts `pending`, and can transition exactly once to either `fulfilled` (with a value) or `rejected` (with a reason) — after that it's permanently 'settled' and immutable, so calling `resolve()` or `reject()` again has no effect. There is no native 'cancelled' state — cancellation requires external mechanisms like `AbortController`. \"Started, running, and finished\" describes a generic task life cycle, not a Promise: there is no running state, since a Promise only represents an eventual result. \"Loading, success, and error\" is wrong on both counts. Those aren't Promise states, and a settled Promise can never change again, so a retry has to create a new Promise.",
+      "references": [
+        "MDN: Promise"
+      ],
+      "teachMePrompt": "I just learned Promises have exactly three states and settle permanently once fulfilled or rejected. Teach me the full mental model behind it — why immutability-after-settling was a deliberate design choice (preventing race conditions where a Promise's outcome could be silently changed later), how `.then()`/`.catch()`/`.finally()` chain off a settled Promise's fixed state, and how `AbortController` provides cancellation as an external mechanism since Promises themselves can't be cancelled. Don't just list the three states — show me why immutability matters and how cancellation is handled instead.",
+      "doubleCheckPrompt": "Is it accurate that JavaScript Promises have no native 'cancelled' state, and cancellation-like behavior must be implemented separately, e.g. via `AbortController`? Cite sources."
+    }
+  },
+  {
+    "id": "seed-02",
+    "label": "clean",
+    "source": "js-0028",
+    "note": "unchanged from the live bank",
+    "question": {
+      "topic": "javascript",
+      "mode": "quick-fire",
+      "prompt": "What's the correct, idiomatic way to convert a `Set` into an array?",
+      "options": [
+        "`Array.from(mySet)` or spread syntax `[...mySet]`, which work because `Set` is iterable",
+        "`mySet.toArray()`, which `Set` provides as a built-in method alongside `has()` and `add()`",
+        "`JSON.parse(JSON.stringify(mySet))`, which works because `JSON.stringify` serializes a Set as an array of its values",
+        "Loop over it and push each value into a new array, because a Set can't be passed to array-creating utilities directly"
+      ],
+      "correctIndex": 0,
+      "explanation": "`Set` implements the iterable protocol, so `Array.from()` and spread syntax `[...mySet]` both work directly and are the standard idioms. `Set` has no built-in `.toArray()` method. `JSON.stringify` doesn't serialize a Set as an array (it produces `{}`), so the round trip gives back an empty object, not the values. Manual looping works, but the claim that a Set can't be passed to array-creating utilities is false: that's exactly what `Array.from()` takes.",
+      "references": [
+        "MDN: Array.from"
+      ],
+      "teachMePrompt": "I just learned Sets are iterable, so `Array.from()` or spread syntax both convert them to arrays directly. Teach me the full mental model behind it — what the iterable protocol actually is (Symbol.iterator), which built-in types implement it (Map, Set, String, arrays, NodeLists, generators), and other things `Array.from`/spread can consume beyond Sets, like converting a Map's entries or a function's `arguments` object into a real array. Don't just answer the conversion question — show me the iterable protocol as the underlying reason it works.",
+      "doubleCheckPrompt": "Is it accurate that `JSON.stringify()` does not properly serialize the contents of a `Set`, typically producing an empty object `{}` instead? Cite sources."
+    }
+  },
+  {
+    "id": "seed-03",
+    "label": "clean",
+    "source": "js-0044",
+    "note": "unchanged from the live bank",
+    "question": {
+      "topic": "javascript",
+      "mode": "quick-fire",
+      "prompt": "What's the difference between `event.preventDefault()` and `event.stopPropagation()`?",
+      "options": [
+        "They do the same thing and are used interchangeably to cancel an event entirely; having two names is just a leftover from the older, competing browser event models of the early web",
+        "Calling either one automatically calls the other as well, because cancelling an event's default action and stopping its propagation always go together",
+        "`preventDefault()` only works on `click` events and `stopPropagation()` only works on `submit` events, so which one you call depends on the event type",
+        "`preventDefault()` cancels the browser's default action (e.g. a form submitting) but not propagation; `stopPropagation()` stops propagation but not the default action"
+      ],
+      "correctIndex": 3,
+      "explanation": "These two methods control entirely independent things: `preventDefault()` cancels the browser's native reaction to the event (like a checkbox toggling, or a form submitting and reloading the page), while `stopPropagation()` cancels the event's continued travel through the DOM tree to other listeners. Neither implies the other, and you can call one, both, or neither depending on what specific behavior needs to be blocked. They aren't interchangeable aliases left over from old browsers: each blocks something different. Neither is tied to particular event types; both work on any event, though `preventDefault()` only has an effect when the event is cancelable.",
+      "references": [
+        "MDN: preventDefault",
+        "MDN: stopPropagation"
+      ],
+      "teachMePrompt": "I just learned `preventDefault` cancels the browser's native reaction while `stopPropagation` cancels the event's travel through the DOM — two fully independent controls. Teach me the full mental model behind it — concrete real-world examples of each used alone (preventDefault on a form submit to handle it via JS/fetch instead; stopPropagation on a nested dropdown to avoid closing it via an outer click-away handler), and a scenario needing both together. Don't just define the two methods — show me realistic independent and combined use cases.",
+      "doubleCheckPrompt": "Is it accurate that calling `event.preventDefault()` on a form's submit event does not by itself stop that event from also bubbling up to any parent element's listeners? Cite sources."
+    }
+  },
+  {
+    "id": "seed-04",
+    "label": "clean",
+    "source": "js-0046",
+    "note": "unchanged from the live bank",
+    "question": {
+      "topic": "javascript",
+      "mode": "scenario",
+      "prompt": "Your search-as-you-type feature fires a `fetch()` request on every keystroke. If the user types quickly, older in-flight requests can resolve after newer ones and overwrite the results with stale data. Which approach directly solves this?",
+      "options": [
+        "Use an `AbortController` per request: before each new fetch, call `.abort()` on the previous one's controller so the stale request is cancelled, then create a new controller",
+        "Switch from `fetch()` to `XMLHttpRequest`, since only XHR supports cancelling an in-flight request through its `.abort()` method, which the `fetch()` API has no equivalent for at all",
+        "Add a `setTimeout` before every fetch call to slow all the requests down uniformly, so each response has time to arrive before the next request is sent",
+        "Ignore the problem, since browsers automatically discard out-of-order fetch responses and only resolve the most recent request made to the same URL"
+      ],
+      "correctIndex": 0,
+      "explanation": "`AbortController` is purpose-built for exactly this race-condition problem: cancelling a previous request when a newer one supersedes it prevents the stale response from ever resolving and overwriting fresher data, and it's the standard fix for search-as-you-type and similar rapid-fire request patterns. Adding a `setTimeout` delay doesn't solve the underlying race, just changes its timing. Switching to XHR is unnecessary — `fetch()` supports cancellation via `AbortController` natively; XHR is not required. Ignoring the problem isn't safe — browsers make no such automatic ordering guarantee for independent fetch calls.",
+      "teachMePrompt": "I just learned `AbortController` lets you cancel an in-flight fetch request, which is the standard fix for stale-response race conditions in rapid-fire UI patterns like search-as-you-type. Teach me the full mental model behind it — how `AbortController`/`AbortSignal` work mechanically (creating a controller, passing its `.signal` into fetch's options, calling `.abort()`), how an aborted fetch's Promise actually settles (rejects with an AbortError, which needs its own catch handling to avoid false error UI), and other use cases like timeout-based cancellation. Don't just confirm the fix — show me the mechanics and the AbortError-handling gotcha.",
+      "doubleCheckPrompt": "Is it accurate that calling `.abort()` on an AbortController causes any fetch using its signal to reject with an AbortError, rather than simply resolving early with no data? Cite sources.",
+      "references": [
+        "MDN: AbortController"
+      ]
+    }
+  },
+  {
+    "id": "seed-05",
+    "label": "clean",
+    "source": "js-0060",
+    "note": "unchanged from the live bank",
+    "question": {
+      "topic": "javascript",
+      "mode": "scenario",
+      "prompt": "A pure, computationally expensive function `calculateExpensiveResult(input)` is called repeatedly throughout your app with a limited, often-repeating set of input values. Which caching strategy is most directly applicable, and what property of the function makes it viable?",
+      "options": [
+        "HTTP caching via `Cache-Control` headers, since the browser's HTTP cache can store the result of any repeated function call, whatever context it's made in",
+        "None: a plain JavaScript function can't avoid recomputation, since only network responses can be cached, so the fix is to make the function itself faster",
+        "Memoization — caching return values keyed by input so repeated calls skip recomputation; it's safe because the function is pure, so the same input always gives the same output",
+        "Debouncing, since caching and debouncing solve the same problem: both cut down on repeated work by collapsing many identical calls with the same input into one single computation"
+      ],
+      "correctIndex": 2,
+      "explanation": "Memoization is exactly the right tool for a pure function called repeatedly with overlapping inputs — wrapping it to store `input -> output` pairs in a cache (often a `Map`) lets repeated calls skip recomputation entirely, and purity is what makes this safe, since an impure function's output could legitimately differ between calls with identical input, making a cached result stale or wrong. HTTP caching is a network-layer concept unrelated to in-process function calls, debouncing solves a completely different problem (call frequency, not repeated identical work), and the claim that plain functions can't avoid recomputation is simply false.",
+      "teachMePrompt": "I just learned memoization caches a pure function's output by its input arguments, and purity is what makes caching safe since impure functions could legitimately return different results for the same input. Teach me the full mental model behind it — how to implement a generic `memoize()` higher-order function using a `Map` for the cache, why memoization can itself become a memory leak if the cache grows unbounded (and strategies like LRU eviction or `WeakMap` keys to address that), and how memoization relates to dynamic programming's caching of subproblem results in algorithms. Don't just define memoization — show me the implementation and the unbounded-cache-growth pitfall.",
+      "doubleCheckPrompt": "Is it accurate that memoizing a function with side effects (an impure function) can produce incorrect results, since a cached output might not reflect what a fresh call would actually return? Cite sources.",
+      "references": [
+        "web.dev: Memoization"
+      ]
+    }
+  },
+  {
+    "id": "seed-06",
+    "label": "wrong_key",
+    "source": "js-0005",
+    "note": "correctIndex moved from the real answer to the 'clones the function' option; explanation unchanged",
+    "question": {
+      "topic": "javascript",
+      "mode": "quick-fire",
+      "prompt": "What does the `new` keyword actually do when you write `new Foo(args)`?",
+      "options": [
+        "It clones the `Foo` function into a new independent copy, so each instance gets its own private version of the constructor and its methods",
+        "It just calls `Foo` with `args` like a normal function call; `this` and the returned value behave exactly as they would without `new`",
+        "It converts `Foo` into an ES2015 class at runtime, which is why calling `Foo` again without `new` afterwards throws a TypeError",
+        "It creates an empty object linked to `Foo.prototype`, calls `Foo` with `this` set to that object, and returns it unless `Foo` returns a different object"
+      ],
+      "correctIndex": 0,
+      "explanation": "`new` performs four steps as a unit: allocate a fresh object linked to `Foo.prototype`, invoke `Foo` with `this` set to that object, run the constructor body, and return the new object by default — unless the constructor explicitly returns its own object, in which case that overrides the default.",
+      "references": [
+        "MDN: new operator"
+      ],
+      "teachMePrompt": "I just learned `new` bundles four steps together: object creation, prototype linking, constructor invocation, and implicit return. Teach me the full mental model behind it — how you could hand-implement `new` yourself using `Object.create` and `.call()` to prove the mechanism, what `new.target` is for, and the classic bug of forgetting `new` on a function constructor (and how classes fixed it by throwing instead of silently misbehaving). Don't just list the four steps — show me how to reconstruct `new` from first principles.",
+      "doubleCheckPrompt": "Is it accurate that if a constructor function explicitly returns an object, `new` returns that object instead of the newly created one? Cite sources."
+    }
+  },
+  {
+    "id": "seed-07",
+    "label": "incomplete_explanation",
+    "source": "js-0031",
+    "note": "explanation of why each wrong option fails replaced with 'The other approaches are incorrect.'",
+    "question": {
+      "topic": "javascript",
+      "mode": "quick-fire",
+      "prompt": "What's the most reliable way to check whether an object has a specific own property (not one inherited from its prototype chain)?",
+      "options": [
+        "`'property' in obj`, since the `in` operator only checks the object's own properties and ignores anything that's inherited through the object's prototype chain",
+        "`obj.property !== undefined`, since a property that exists on the object always has some value, and only missing properties read as `undefined`",
+        "`Object.hasOwn(obj, 'property')` (or the older `obj.hasOwnProperty`), since it checks only for an own property and returns `true` even if its value is `undefined`",
+        "`typeof obj.property === 'object'`, since `typeof` returns `'undefined'` for missing and inherited properties and `'object'` for own ones"
+      ],
+      "correctIndex": 2,
+      "explanation": "`Object.hasOwn()` (the modern alternative to `.hasOwnProperty()`) checks only for an own property, independent of its value, which is why it's the most reliable choice. The other approaches are incorrect.",
+      "references": [
+        "MDN: Object.hasOwn"
+      ],
+      "teachMePrompt": "I just learned `Object.hasOwn()` is the reliable way to check own-property existence, unlike undefined-checking (fails on legitimately-undefined values) or `in` (includes inherited properties). Teach me the full mental model behind it — why `Object.hasOwn()` was introduced as a safer replacement for `obj.hasOwnProperty()` (which could break if an object's prototype was tampered with or was created via `Object.create(null)`), and the full landscape of property-existence checks (`in`, `hasOwnProperty`, `Object.hasOwn`, `Object.keys().includes()`) and when each is appropriate. Don't just pick the winner — show me why `.hasOwnProperty()` itself can be unreliable.",
+      "doubleCheckPrompt": "Is it accurate that calling `obj.hasOwnProperty()` directly can fail or throw if `obj` was created via `Object.create(null)`, since such an object has no inherited methods at all? Cite sources."
+    }
+  },
+  {
+    "id": "seed-08",
+    "label": "filler_distractor",
+    "source": "js-0039",
+    "note": "'window.queryParams' distractor replaced with an absurd prompt() option; explanation updated to match",
+    "question": {
+      "topic": "javascript",
+      "mode": "quick-fire",
+      "prompt": "What's the modern, recommended way to read query string parameters from the current page's URL in JavaScript?",
+      "options": [
+        "Manually split `window.location.href` on `?` and `&` and parse each piece with a regex, since doing it by hand gives you full control over decoding, repeated keys, and edge cases",
+        "Ask the visitor to type the parameters into a `prompt()` dialog when the page loads, and read their answers from there",
+        "Query strings can only be read server-side; client-side JavaScript has no access to them, so the server has to embed the values into the page itself",
+        "`new URLSearchParams(window.location.search)`, which parses the query string and offers `.get()`, `.has()`, and iteration, handling URL-encoding correctly"
+      ],
+      "correctIndex": 3,
+      "explanation": "`URLSearchParams` is the built-in API purpose-built for parsing and working with query strings, correctly handling URL-decoding, repeated keys, and encoding edge cases that manual string-splitting tends to get wrong. Asking the visitor to retype the values doesn't read the URL at all, and query strings are absolutely readable client-side via `location.search`.",
+      "references": [
+        "MDN: URLSearchParams"
+      ],
+      "teachMePrompt": "I just learned `URLSearchParams` is the built-in, correctly-URL-decoding way to parse query strings, replacing manual regex/split approaches. Teach me the full mental model behind it — its full API surface (`.get`, `.getAll` for repeated keys, `.set`, `.append`, `.toString()` for building query strings, iteration), how it relates to the broader `URL` object (`new URL(window.location.href).searchParams`), and common pitfalls like forgetting that `.get()` on a missing key returns `null` not `undefined`. Don't just show the basic parsing call — show me the full API and its edge cases.",
+      "doubleCheckPrompt": "Is it accurate that `URLSearchParams.get('key')` returns `null` (not `undefined`) when the given key isn't present in the query string? Cite sources."
+    }
+  },
+  {
+    "id": "seed-09",
+    "label": "strawman_explanation",
+    "source": "js-0021",
+    "note": "explanation restates the 'silently drops fetchB' option as 'renders first, then throws', which that option never says",
+    "question": {
+      "topic": "javascript",
+      "mode": "scenario",
+      "prompt": "You call `Promise.all([fetchA(), fetchB(), fetchC()])` to load three independent pieces of dashboard data in parallel. If `fetchB()` rejects while `fetchA()` and `fetchC()` would have succeeded, what happens, and what's the fix if you want to show partial data anyway?",
+      "options": [
+        "`Promise.all` still resolves with the data that did succeed, silently dropping `fetchB`'s result, so the dashboard simply renders the two sections that did manage to load",
+        "`Promise.all` rejects as a whole with `fetchB`'s error, discarding the successful results; to keep partial data, use `Promise.allSettled`, which reports each promise's status",
+        "`Promise.all` retries `fetchB()` automatically up to 3 times before rejecting, so the fix is to raise its retry limit or add a fallback value",
+        "The dashboard hangs indefinitely, because `Promise.all` keeps waiting for `fetchB()` to succeed; adding a timeout around the call is the fix"
+      ],
+      "correctIndex": 1,
+      "explanation": "`Promise.all` is all-or-nothing: a single rejection short-circuits the whole call, immediately rejecting with just that one error and discarding any other results, even ones that already succeeded. `Promise.allSettled` is built specifically for the partial-success case, always resolving once every promise has settled (whether fulfilled or rejected) and giving you a per-promise status to inspect — so the idea that `Promise.all` renders the successful sections first and then throws once `fetchB` fails is wrong, and there's no built-in automatic retry or infinite-hang behavior in either.",
+      "teachMePrompt": "I just learned `Promise.all` fails fast on the first rejection and discards other results, while `Promise.allSettled` waits for everything and reports each outcome individually. Teach me the full mental model behind it — how `Promise.race` and `Promise.any` round out the full set of Promise combinators, what each is actually for (racing for the fastest result vs finding the first success), and how to choose the right combinator based on whether you need all-or-nothing, best-effort, or first-result semantics. Don't just contrast all vs allSettled — show me the complete combinator family.",
+      "doubleCheckPrompt": "Is it accurate that `Promise.all` discards the results of promises that already succeeded once any single promise in the batch rejects? Cite sources.",
+      "references": [
+        "MDN: Promise.all()",
+        "MDN: Promise.allSettled()"
+      ]
+    }
+  },
+  {
+    "id": "seed-10",
+    "label": "factual_error",
+    "source": "js-0063",
+    "note": "inserted the false claim that browsers terminate every worker after 30 seconds",
+    "question": {
+      "topic": "javascript",
+      "mode": "quick-fire",
+      "prompt": "What are Web Workers, and what specific performance problem do they solve?",
+      "options": [
+        "They schedule code to run at a specific future date and time, even after the page is closed, which makes them the browser's version of a cron job",
+        "They speed up network requests by running them in parallel automatically, since a page's main thread can only have one request in flight at a time",
+        "They run JavaScript on a background thread, off the main UI thread, so heavy computation doesn't block rendering or input — though workers can't touch the DOM and use message passing",
+        "They allow direct, synchronous DOM manipulation from a background thread, so heavy UI updates can be applied off the main thread without freezing the page while the user keeps interacting with it"
+      ],
+      "correctIndex": 2,
+      "explanation": "Web Workers run JS in a genuinely separate thread, which is the actual solution to the single-threaded main-thread-blocking problem: heavy computation moved to a worker no longer freezes scrolling, animations, or input handling on the main thread while it runs. The tradeoff is that the browser terminates every worker after 30 seconds of runtime, and workers have no direct DOM access and can only exchange data with the main thread via asynchronous message passing (`postMessage`/`onmessage`), which is a deliberate isolation boundary, not a limitation to work around.",
+      "references": [
+        "MDN: Web Workers API"
+      ],
+      "teachMePrompt": "I just learned Web Workers run JS on a genuinely separate thread to avoid blocking the main thread during heavy computation, but can't touch the DOM directly and communicate only via message passing. Teach me the full mental model behind it — why the no-DOM-access restriction exists (avoiding thread-safety issues with concurrent DOM manipulation), the different types of workers (dedicated, shared, service workers) and what each is for, and the actual `postMessage`/`onmessage` communication pattern including how structured cloning of message data works. Don't just describe what workers solve — show me the communication mechanism and worker-type landscape.",
+      "doubleCheckPrompt": "Is it accurate that Web Workers cannot directly access or manipulate the DOM, and instead must communicate with the main thread exclusively through asynchronous message passing? Cite sources."
+    }
+  }
+]

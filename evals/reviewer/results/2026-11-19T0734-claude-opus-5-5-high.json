@@ -1,0 +1,259 @@
+{
+  "meta": {
+    "date": "2026-11-19T07:34:11.016Z",
+    "model": "claude-opus-5-5",
+    "effort": "high",
+    "dataset": "evals/reviewer/seed.json",
+    "datasetHash": "c13d51cd753a",
+    "promptHash": "8fefb47fd78d",
+    "items": 10,
+    "batchSize": 10,
+    "inputTokens": 9832,
+    "outputTokens": 3161,
+    "cost": 0.102548,
+    "avgLatencyMs": 30092
+  },
+  "summary": {
+    "runs": 1,
+    "totals": {
+      "recall": {
+        "mean": 1,
+        "min": 1,
+        "max": 1
+      },
+      "rightReasonRecall": {
+        "mean": 1,
+        "min": 1,
+        "max": 1
+      },
+      "falsePositiveRate": {
+        "mean": 0.4,
+        "min": 0.4,
+        "max": 0.4
+      },
+      "noVerdict": 0
+    },
+    "byLabel": {
+      "factual_error": {
+        "n": 1,
+        "caught": {
+          "mean": 1,
+          "min": 1,
+          "max": 1
+        },
+        "rightReason": {
+          "mean": 1,
+          "min": 1,
+          "max": 1
+        }
+      },
+      "filler_distractor": {
+        "n": 1,
+        "caught": {
+          "mean": 1,
+          "min": 1,
+          "max": 1
+        },
+        "rightReason": {
+          "mean": 1,
+          "min": 1,
+          "max": 1
+        }
+      },
+      "incomplete_explanation": {
+        "n": 1,
+        "caught": {
+          "mean": 1,
+          "min": 1,
+          "max": 1
+        },
+        "rightReason": {
+          "mean": 1,
+          "min": 1,
+          "max": 1
+        }
+      },
+      "strawman_explanation": {
+        "n": 1,
+        "caught": {
+          "mean": 1,
+          "min": 1,
+          "max": 1
+        },
+        "rightReason": {
+          "mean": 1,
+          "min": 1,
+          "max": 1
+        }
+      },
+      "wrong_key": {
+        "n": 1,
+        "caught": {
+          "mean": 1,
+          "min": 1,
+          "max": 1
+        },
+        "rightReason": {
+          "mean": 1,
+          "min": 1,
+          "max": 1
+        }
+      }
+    }
+  },
+  "runs": [
+    {
+      "perItem": [
+        {
+          "id": "seed-01",
+          "label": "clean",
+          "verdict": "pass",
+          "category": "none",
+          "reason": "The key is correct: pending, fulfilled and rejected, and settled is permanent. Each distractor reflects a distinct misconception: a native cancel state, a generic task lifecycle, and UI loading states with retries. The explanation addresses each one specifically and accurately, and there is no surface tell.",
+          "outcome": "pass"
+        },
+        {
+          "id": "seed-02",
+          "label": "clean",
+          "verdict": "pass",
+          "category": "none",
+          "reason": "The key is correct: Set is iterable, so Array.from and spread both work. Each distractor maps to a real misconception (a nonexistent toArray method, assuming JSON serializes a Set as an array, thinking Sets can't feed array utilities). The explanation rebuts each one accurately: JSON.stringify of a Set gives '{}', and the loop option's false premise is called out. No surface tell, since every option carries a justification clause and lengths are comparable.",
+          "outcome": "pass"
+        },
+        {
+          "id": "seed-03",
+          "label": "clean",
+          "verdict": "fail",
+          "category": "filler_distractor",
+          "reason": "The 'preventDefault only works on click events and stopPropagation only works on submit events' option is an arbitrary pairing. It doesn't trace to any real misconception and reads as padding to reach four options. The other two distractors, interchangeable aliases and one implying the other, are plausible.",
+          "outcome": "false_positive"
+        },
+        {
+          "id": "seed-04",
+          "label": "clean",
+          "verdict": "pass",
+          "category": "none",
+          "reason": "AbortController is the correct, unambiguous answer. Each distractor reflects a distinct misconception: believing fetch can't be cancelled, believing a uniform delay fixes ordering, and believing browsers auto-discard stale responses. The explanation addresses each one specifically and accurately, and there is no evident surface tell.",
+          "outcome": "pass"
+        },
+        {
+          "id": "seed-05",
+          "label": "clean",
+          "verdict": "fail",
+          "category": "surface_tell",
+          "reason": "The stem asks for both a strategy and 'what property of the function makes it viable.' The correct option is the only one that answers the second half, and it echoes the stem's word 'pure.' A test-taker can pick it just by matching the stem's structure and vocabulary. The 'None: only network responses can be cached' option is also near-filler.",
+          "outcome": "false_positive"
+        },
+        {
+          "id": "seed-06",
+          "label": "wrong_key",
+          "verdict": "fail",
+          "category": "wrong_key",
+          "reason": "correctIndex points to the 'clones the Foo function' option, which is wrong. The correct answer is the option describing an empty object linked to Foo.prototype, a call with this bound to it, and a return unless Foo returns an object. The explanation also never addresses the clone, plain-call or convert-to-class distractors.",
+          "outcome": "caught"
+        },
+        {
+          "id": "seed-07",
+          "label": "incomplete_explanation",
+          "verdict": "fail",
+          "category": "incomplete_explanation",
+          "reason": "The explanation dismisses three options with a single 'The other approaches are incorrect.' It never says that `in` includes inherited properties, that `!== undefined` fails for own properties whose value is undefined, or that typeof reports value types rather than ownership. The typeof option is also weak, near-filler.",
+          "outcome": "caught"
+        },
+        {
+          "id": "seed-08",
+          "label": "filler_distractor",
+          "verdict": "fail",
+          "category": "filler_distractor",
+          "reason": "The 'ask the visitor to type the parameters into a prompt() dialog' option isn't a real misconception about parsing query strings. It is obvious padding that nobody would choose. The manual split/regex option is also only rebutted indirectly, through a passing remark that manual splitting 'tends to get wrong' edge cases.",
+          "outcome": "caught"
+        },
+        {
+          "id": "seed-09",
+          "label": "strawman_explanation",
+          "verdict": "fail",
+          "category": "strawman_explanation",
+          "reason": "The explanation refutes 'the idea that Promise.all renders the successful sections first and then throws once fetchB fails.' The option actually claims that Promise.all resolves with the successful data and silently drops fetchB's result. The explanation therefore misstates the option it is rebutting.",
+          "outcome": "caught"
+        },
+        {
+          "id": "seed-10",
+          "label": "factual_error",
+          "verdict": "fail",
+          "category": "factual_error",
+          "reason": "The explanation says 'the browser terminates every worker after 30 seconds of runtime.' That is false: dedicated workers run until terminate()/close() or until the page goes away. Separately, the explanation never addresses the cron-job, parallel-network-requests or synchronous-DOM-access distractors individually.",
+          "outcome": "caught"
+        }
+      ],
+      "byLabel": {
+        "factual_error": {
+          "n": 1,
+          "caught": 1,
+          "rightReason": 1,
+          "missed": 0,
+          "noVerdict": 0
+        },
+        "filler_distractor": {
+          "n": 1,
+          "caught": 1,
+          "rightReason": 1,
+          "missed": 0,
+          "noVerdict": 0
+        },
+        "incomplete_explanation": {
+          "n": 1,
+          "caught": 1,
+          "rightReason": 1,
+          "missed": 0,
+          "noVerdict": 0
+        },
+        "strawman_explanation": {
+          "n": 1,
+          "caught": 1,
+          "rightReason": 1,
+          "missed": 0,
+          "noVerdict": 0
+        },
+        "wrong_key": {
+          "n": 1,
+          "caught": 1,
+          "rightReason": 1,
+          "missed": 0,
+          "noVerdict": 0
+        }
+      },
+      "totals": {
+        "broken": 5,
+        "clean": 5,
+        "recall": 1,
+        "rightReasonRecall": 1,
+        "falsePositiveRate": 0.4,
+        "noVerdict": 0
+      }
+    }
+  ],
+  "calls": [
+    {
+      "run": 0,
+      "batch": 0,
+      "latencyMs": 30092,
+      "usage": {
+        "input_tokens": 9832,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 3161,
+        "output_tokens_details": {
+          "thinking_tokens": 1800
+        },
+        "service_tier": "standard",
+        "inference_geo": "global",
+        "speed": "standard"
+      },
+      "error": null
+    }
+  ]
+}
