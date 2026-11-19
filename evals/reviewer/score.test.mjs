@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { outcomeFor, scoreRun, summarize } from "./score.mjs";
+import { outcomeFor, scoreRun, summarize, toMarkdown } from "./score.mjs";
 
 const pass = { verdict: "pass", category: "none", reason: "ok" };
 const fail = (category) => ({ verdict: "fail", category, reason: "broken" });
@@ -44,4 +44,34 @@ test("summarize reports mean, min and max across runs", () => {
   assert.deepEqual(s.totals.recall, { mean: 0.5, min: 0, max: 1 });
   assert.equal(s.byLabel.wrong_key.n, 2);
   assert.equal(s.runs, 2);
+});
+
+test("borderline items are reported but not scored", () => {
+  const withBorderline = [...items, { id: "f", label: "borderline" }];
+  const scored = scoreRun(withBorderline, {
+    a: pass, b: pass, c: fail("wrong_key"), d: fail("wrong_key"), e: fail("factual_error"),
+    f: fail("surface_tell"),
+  });
+  assert.equal(scored.totals.falsePositiveRate, 0);
+  assert.equal(scored.totals.recall, 1);
+  assert.equal(scored.totals.borderline, 1);
+  assert.equal(scored.byLabel.borderline, undefined);
+});
+
+test("summarize lists questions whose verdict changed between runs", () => {
+  const run1 = { a: pass, b: pass, c: fail("wrong_key"), d: fail("wrong_key"), e: fail("factual_error") };
+  const run2 = { ...run1, a: fail("filler_distractor") }; // a flips
+  const run3 = { ...run1, e: undefined }; // e missing once: not flaky
+  const s = summarize([run1, run2, run3].map((v) => scoreRun(items, v)));
+  assert.deepEqual(s.inconsistent.map((x) => x.id), ["a"]);
+  assert.equal(s.inconsistent[0].failed, 1);
+  assert.equal(s.inconsistent[0].decided, 3);
+  assert.equal(s.inconsistent[0].reasons[0].category, "filler_distractor");
+
+  const md = toMarkdown(s, {
+    model: "m", effort: "high", dataset: "d.json", items: 5, promptHash: "p", date: "now",
+    cost: 0.1, inputTokens: 1, outputTokens: 1, avgLatencyMs: 1000,
+  });
+  assert.match(md, /Flaky questions/);
+  assert.match(md, /\| a \| clean \| 1 of 3 \|/);
 });

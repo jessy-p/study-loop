@@ -7,7 +7,8 @@
 //   --dataset <path>   labelled dataset (default evals/reviewer/seed.json)
 //   --model <id>       model under test (default claude-opus-5-5)
 //   --effort <level>   low | medium | high | xhigh | max (default high)
-//   --runs <n>         repeat the whole dataset n times (default 1)
+//   --runs <n>         repeat the whole dataset n times (default 3: one run is
+//                      a sample, not a measurement)
 //   --batch-size <n>   questions per API call (default 10)
 //   --dry-run          print the first request and exit, no API call
 //
@@ -32,7 +33,7 @@ const { values: args } = parseArgs({
     dataset: { type: "string", default: path.join(here, "seed.json") },
     model: { type: "string", default: "claude-opus-5-5" },
     effort: { type: "string", default: "high" },
-    runs: { type: "string", default: "1" },
+    runs: { type: "string", default: "3" },
     "batch-size": { type: "string", default: "10" },
     "dry-run": { type: "boolean", default: false },
   },
